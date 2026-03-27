@@ -537,6 +537,20 @@ export function SettingsPage() {
   );
 
   const enablePauseOverlay = usePreferencesStore((s) => s.enablePauseOverlay);
+  const pauseOverlayInactivityTime = usePreferencesStore(
+    (s) => s.pauseOverlayInactivityTime,
+  );
+  const enablePauseOverlayHoverHide = usePreferencesStore(
+    (s) => s.enablePauseOverlayHoverHide,
+  );
+  const timeFormat12Hour = usePreferencesStore((s) => s.timeFormat12Hour);
+  const setPauseOverlayInactivityTime = usePreferencesStore(
+    (s) => s.setPauseOverlayInactivityTime,
+  );
+  const setEnablePauseOverlayHoverHide = usePreferencesStore(
+    (s) => s.setEnablePauseOverlayHoverHide,
+  );
+  const setTimeFormat12Hour = usePreferencesStore((s) => s.setTimeFormat12Hour);
   const setEnablePauseOverlay = usePreferencesStore(
     (s) => s.setEnablePauseOverlay,
   );
@@ -743,6 +757,9 @@ export function SettingsPage() {
     setEnableDoubleClickToSeek,
     setEnableAutoResumeOnPlaybackError,
     setEnablePauseOverlay,
+    setPauseOverlayInactivityTime,
+    setEnablePauseOverlayHoverHide,
+    setTimeFormat12Hour,
     setEnableNumberKeySeeking,
     setCustomTheme,
   ]);
@@ -786,6 +803,9 @@ export function SettingsPage() {
     enableDoubleClickToSeek,
     enableAutoResumeOnPlaybackError,
     enablePauseOverlay,
+    pauseOverlayInactivityTime,
+    enablePauseOverlayHoverHide,
+    timeFormat12Hour,
     customThemeBaseline ?? customTheme,
     savedCustomThemes,
     hiddenDefaultThemes,
@@ -957,6 +977,9 @@ export function SettingsPage() {
       state.enableAutoResumeOnPlaybackError.state,
     );
     setEnablePauseOverlay(state.enablePauseOverlay.state);
+    setPauseOverlayInactivityTime(state.pauseOverlayInactivityTime.state);
+    setEnablePauseOverlayHoverHide(state.enablePauseOverlayHoverHide.state);
+    setTimeFormat12Hour(state.timeFormat12Hour.state);
     setCustomTheme(state.customTheme.state);
     setCustomThemeBaseline(state.customTheme.state);
     useThemeStore.setState({
@@ -1024,6 +1047,9 @@ export function SettingsPage() {
     setEnableDoubleClickToSeek,
     setEnableAutoResumeOnPlaybackError,
     setEnablePauseOverlay,
+    setEnablePauseOverlayHoverHide,
+    setPauseOverlayInactivityTime,
+    setTimeFormat12Hour,
     setCustomTheme,
   ]);
   return (
@@ -1143,6 +1169,20 @@ export function SettingsPage() {
               enableLowPerformanceMode={state.enableLowPerformanceMode.state}
               enablePauseOverlay={state.enablePauseOverlay.state}
               setEnablePauseOverlay={state.enablePauseOverlay.set}
+              pauseOverlayInactivityTime={
+                state.pauseOverlayInactivityTime.state
+              }
+              setPauseOverlayInactivityTime={
+                state.pauseOverlayInactivityTime.set
+              }
+              enablePauseOverlayHoverHide={
+                state.enablePauseOverlayHoverHide.state
+              }
+              setEnablePauseOverlayHoverHide={
+                state.enablePauseOverlayHoverHide.set
+              }
+              timeFormat12Hour={state.timeFormat12Hour.state ?? false}
+              setTimeFormat12Hour={(v) => state.timeFormat12Hour.set(v)}
               savedCustomThemes={state.savedCustomThemes.state}
               setSavedCustomThemes={state.savedCustomThemes.set}
               hiddenDefaultThemes={state.hiddenDefaultThemes.state}

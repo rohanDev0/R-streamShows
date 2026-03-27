@@ -40,9 +40,16 @@ export interface PreferencesStore {
   enableAutoResumeOnPlaybackError: boolean;
   enableNumberKeySeeking: boolean;
   enablePauseOverlay: boolean;
+  pauseOverlayInactivityTime: number;
+  enablePauseOverlayHoverHide: boolean;
+  timeFormat12Hour: boolean | null;
   enableGamepadControls: boolean;
+  gamepadSetupComplete: boolean;
+  gamepadInputMode: "controller" | "kbm" | "both";
   gamepadMapping: Record<string, string>;
   keyboardShortcuts: KeyboardShortcuts;
+  ignoreHeader: boolean;
+  isGamepadActive: boolean;
 
   setEnableThumbnails(v: boolean): void;
   setEnableAutoplay(v: boolean): void;
@@ -76,9 +83,16 @@ export interface PreferencesStore {
   setEnableAutoResumeOnPlaybackError(v: boolean): void;
   setEnableNumberKeySeeking(v: boolean): void;
   setEnablePauseOverlay(v: boolean): void;
+  setPauseOverlayInactivityTime(v: number): void;
+  setEnablePauseOverlayHoverHide(v: boolean): void;
+  setTimeFormat12Hour(v: boolean | null): void;
   setEnableGamepadControls(v: boolean): void;
+  setGamepadSetupComplete(v: boolean): void;
+  setGamepadInputMode(v: "controller" | "kbm" | "both"): void;
   setGamepadMapping(v: Record<string, string>): void;
   setKeyboardShortcuts(v: KeyboardShortcuts): void;
+  setIgnoreHeader(v: boolean): void;
+  setGamepadActive(v: boolean): void;
 }
 
 export const usePreferencesStore = create(
@@ -116,9 +130,16 @@ export const usePreferencesStore = create(
       enableAutoResumeOnPlaybackError: true,
       enableNumberKeySeeking: true,
       enablePauseOverlay: false,
+      pauseOverlayInactivityTime: 2,
+      enablePauseOverlayHoverHide: false,
+      timeFormat12Hour: null,
       enableGamepadControls: false,
+      gamepadSetupComplete: false,
+      gamepadInputMode: "both",
       gamepadMapping: {},
       keyboardShortcuts: DEFAULT_KEYBOARD_SHORTCUTS,
+      ignoreHeader: false,
+      isGamepadActive: false,
       setEnableThumbnails(v) {
         set((s) => {
           s.enableThumbnails = v;
@@ -284,9 +305,34 @@ export const usePreferencesStore = create(
           s.enablePauseOverlay = v;
         });
       },
+      setPauseOverlayInactivityTime(v) {
+        set((s) => {
+          s.pauseOverlayInactivityTime = v;
+        });
+      },
+      setEnablePauseOverlayHoverHide(v) {
+        set((s) => {
+          s.enablePauseOverlayHoverHide = v;
+        });
+      },
+      setTimeFormat12Hour(v) {
+        set((s) => {
+          s.timeFormat12Hour = v;
+        });
+      },
       setEnableGamepadControls(v) {
         set((s) => {
           s.enableGamepadControls = v;
+        });
+      },
+      setGamepadSetupComplete(v) {
+        set((s) => {
+          s.gamepadSetupComplete = v;
+        });
+      },
+      setGamepadInputMode(v) {
+        set((s) => {
+          s.gamepadInputMode = v;
         });
       },
       setGamepadMapping(v) {
@@ -297,6 +343,16 @@ export const usePreferencesStore = create(
       setKeyboardShortcuts(v) {
         set((s) => {
           s.keyboardShortcuts = v;
+        });
+      },
+      setIgnoreHeader(v) {
+        set((s) => {
+          s.ignoreHeader = v;
+        });
+      },
+      setGamepadActive(v) {
+        set((s) => {
+          s.isGamepadActive = v;
         });
       },
     })),

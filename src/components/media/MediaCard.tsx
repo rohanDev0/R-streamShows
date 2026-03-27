@@ -1,7 +1,14 @@
 // I'm sorry this is so confusing 😭
 
 import classNames from "classnames";
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import {
+  ReactNode,
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import { useTranslation } from "react-i18next";
 import { Link } from "react-router-dom";
 
@@ -120,6 +127,7 @@ export interface MediaCardProps {
   forceSkeleton?: boolean;
   editable?: boolean;
   onEdit?: (e?: React.MouseEvent) => void;
+  nestedTabIndex?: number;
 }
 
 function checkReleased(media: MediaItem): boolean {
@@ -147,6 +155,7 @@ function MediaCardContent({
   forceSkeleton,
   editable,
   onEdit,
+  nestedTabIndex,
 }: MediaCardProps) {
   const { t } = useTranslation();
   const percentageString = `${Math.round(percentage ?? 0).toFixed(0)}%`;
@@ -154,9 +163,6 @@ function MediaCardContent({
   const isReleased = useCallback(() => checkReleased(media), [media]);
 
   const canLink = linkable && !closable && isReleased();
-
-  const dotListContent = [t(`media.types.${media.type}`)];
-
   const [searchQuery] = useSearchQuery();
   const enableMinimalCards = usePreferencesStore((s) => s.enableMinimalCards);
 
@@ -176,9 +182,8 @@ function MediaCardContent({
     );
   }
 
-  if (isReleased() && media.year) {
-    dotListContent.push(media.year.toFixed());
-  }
+  const dotListContent: ReactNode[] = [t(`media.types.${media.type}`)];
+  if (media.year) dotListContent.push(media.year.toString());
 
   if (!isReleased()) {
     dotListContent.push(t("media.unreleased"));
@@ -187,11 +192,12 @@ function MediaCardContent({
   return (
     <div ref={targetRef as React.RefObject<HTMLDivElement>}>
       <Flare.Base
-        className={`group -m-[0.705em] rounded-xl bg-background-main transition-colors duration-300 focus:relative focus:z-10 ${
-          canLink ? "hover:bg-mediaCard-hoverBackground tabbable" : ""
+        className={`group -m-[0.705em] rounded-xl bg-background-main transition-colors duration-300 ${
+          canLink ? "hover:bg-mediaCard-hoverBackground" : ""
         } ${closable ? "jiggle" : ""}`}
-        tabIndex={canLink ? 0 : -1}
-        onKeyUp={(e) => e.key === "Enter" && e.currentTarget.click()}
+        onKeyUp={(e) =>
+          e.key === "Enter" && (e.currentTarget as HTMLElement).click()
+        }
       >
         <Flare.Light
           flareSize={300}
@@ -272,13 +278,13 @@ function MediaCardContent({
                 className="absolute bookmark-button"
                 onClick={(e) => e.preventDefault()}
               >
-                <MediaBookmarkButton media={media} />
+                <MediaBookmarkButton media={media} tabIndex={nestedTabIndex} />
               </div>
             )}
 
             {searchQuery.length > 0 && !closable ? (
               <div className="absolute" onClick={(e) => e.preventDefault()}>
-                <MediaBookmarkButton media={media} />
+                <MediaBookmarkButton media={media} tabIndex={nestedTabIndex} />
               </div>
             ) : null}
 
@@ -289,6 +295,7 @@ function MediaCardContent({
             >
               <IconPatch
                 clickable
+                tabIndex={nestedTabIndex}
                 className="text-2xl text-mediaCard-badgeText transition-transform hover:scale-110 duration-500"
                 onClick={() => closable && onClose?.()}
                 icon={Icons.X}
@@ -308,8 +315,9 @@ function MediaCardContent({
               {!closable && (
                 <div className="absolute bottom-0 translate-y-1 right-1">
                   <button
-                    className="media-more-button p-2"
+                    className="media-more-button p-2 outline-none"
                     type="button"
+                    tabIndex={nestedTabIndex}
                     onClick={(e) => {
                       e.preventDefault();
                       e.stopPropagation();
@@ -324,10 +332,11 @@ function MediaCardContent({
                 </div>
               )}
               {editable && closable && (
-                <div className="absolute bottom-0 translate-y-1 right-1">
+                <div className="absolute bottom-0 translate-y-1 right-1 border-none outline-none">
                   <button
-                    className="media-more-button p-2"
+                    className="media-more-button p-2 outline-none"
                     type="button"
+                    tabIndex={nestedTabIndex}
                     onClick={(e) => {
                       e.preventDefault();
                       e.stopPropagation();
@@ -356,6 +365,17 @@ export function MediaCard(props: MediaCardProps) {
   const enableDetailsModal = usePreferencesStore(
     (state) => state.enableDetailsModal,
   );
+  const enableGamepadControls = usePreferencesStore(
+    (state: any) => state.enableGamepadControls,
+  );
+  const isGamepadActive = usePreferencesStore(
+    (state: any) => state.isGamepadActive,
+  );
+
+  const gamepadActive =
+    enableGamepadControls && typeof document !== "undefined" && isGamepadActive;
+
+  const nestedTabIndex = gamepadActive ? -1 : 0;
 
   const isReleased = useCallback(
     () => checkReleased(props.media),
@@ -454,6 +474,19 @@ export function MediaCard(props: MediaCardProps) {
   };
 
   const handleCardClick = (e: React.MouseEvent) => {
+    if (
+      document.body.classList.contains("gamepad-active") &&
+      enableGamepadControls
+    ) {
+      e.preventDefault();
+      showModal("media-controller-menu", {
+        id: Number(media.id),
+        type: media.type === "movie" ? "movie" : "show",
+        media,
+        series: props.series,
+      });
+      return;
+    }
     if (enableDetailsModal && canLink) {
       e.preventDefault();
       handleShowDetails();
@@ -477,6 +510,7 @@ export function MediaCard(props: MediaCardProps) {
       onEdit={props.onEdit ? handleEditClick : undefined}
       onShowDetails={handleShowDetails}
       forceSkeleton={forceSkeleton}
+      nestedTabIndex={nestedTabIndex}
     />
   );
 
@@ -574,6 +608,7 @@ export function MediaCard(props: MediaCardProps) {
             />
             <button
               type="submit"
+              tabIndex={nestedTabIndex}
               className="text-type-link hover:text-white transition-colors"
               disabled={!newFolderName.trim()}
             >
@@ -597,6 +632,8 @@ export function MediaCard(props: MediaCardProps) {
         onContextMenu={handleCardContextMenu}
       >
         {content}
+        {/* Gamepad Focus Ring - Placed here to avoid negative margin clipping */}
+        <div className="absolute inset-0 border-4 border-white rounded-xl opacity-0 group-focus-within:opacity-100 pointer-events-none z-50 transition-opacity duration-200 ring-offset-2 ring-offset-background-main shadow-[0_0_20px_rgba(255,255,255,0.5)] gamepad-focus-ring" />
         {contextMenuEl}
       </span>
     );
@@ -605,15 +642,17 @@ export function MediaCard(props: MediaCardProps) {
   return (
     <Link
       to={link}
-      tabIndex={-1}
+      tabIndex={0}
       className={classNames(
-        "tabbable relative block",
+        "tabbable relative block rounded-xl focus:outline-none gamepad-focus-ring-parent",
         props.closable ? "hover:cursor-default" : "",
       )}
       onClick={handleCardClick}
       onContextMenu={handleCardContextMenu}
     >
       {content}
+      {/* Gamepad Focus Ring - Placed here to avoid negative margin clipping */}
+      <div className="absolute inset-0 border-4 border-white rounded-xl opacity-0 group-focus-within:opacity-100 pointer-events-none z-50 transition-opacity duration-200 ring-offset-2 ring-offset-background-main shadow-[0_0_20px_rgba(255,255,255,0.5)] gamepad-focus-ring" />
       {contextMenuEl}
     </Link>
   );

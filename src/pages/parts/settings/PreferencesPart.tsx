@@ -54,6 +54,14 @@ export function PreferencesPart(props: {
   const setEnableGamepadControls = usePreferencesStore(
     (s) => s.setEnableGamepadControls,
   );
+  const gamepadSetupComplete = usePreferencesStore(
+    (s) => s.gamepadSetupComplete,
+  );
+  const gamepadInputMode = usePreferencesStore((s) => s.gamepadInputMode);
+  const setGamepadInputMode = usePreferencesStore((s) => s.setGamepadInputMode);
+  const ignoreHeader = usePreferencesStore((s) => s.ignoreHeader);
+  const setIgnoreHeader = usePreferencesStore((s) => s.setIgnoreHeader);
+
   const sorted = sortLangCodes(
     appLanguageOptions.map((item) => item.code),
     props.language,
@@ -285,39 +293,119 @@ export function PreferencesPart(props: {
               {t("settings.preferences.keyboardShortcutsDescription")}
             </p>
           </div>
-          <div className="flex gap-3 max-w-[25rem]">
-            <Button
-              theme="secondary"
-              onClick={() => showModal("keyboard-commands-edit")}
-              className="flex-1"
-            >
-              {t("settings.preferences.keyboardShortcutsLabel")}
-            </Button>
-            <Button
-              theme="secondary"
-              onClick={() => showModal("gamepad-controls-edit")}
-              className="flex-1"
-            >
-              {" "}
-              {t(
-                "settings.preferences.gamepadControlsLabel",
-                "Customizze Controller Keybinds",
-              )}
-            </Button>
-          </div>
-
-          {/* Gamepad Enable Toggle */}
-          <div
-            onClick={() => setEnableGamepadControls(!enableGamepadControls)}
-            className="bg-dropdown-background hover:bg-dropdown-hoverBackground select-none cursor-pointer space-x-3 flex items-center max-w-[25rem] py-3 px-4 rounded-lg"
+          <Button
+            theme="secondary"
+            onClick={() => showModal("keyboard-commands-edit")}
           >
-            <Toggle enabled={enableGamepadControls} />
-            <p className="flex-1 text-white font-bold">
+            {t("settings.preferences.keyboardShortcutsLabel")}
+          </Button>
+
+          {/* Gamepad Setup & Controls */}
+          <div>
+            <p className="text-white font-bold mb-3">
+              {t("settings.preferences.gamepadTitle", "Controller Support")}
+            </p>
+            <p className="max-w-[25rem] font-medium mb-4">
               {t(
-                "settings.preferences.enableGamepadControls",
-                "Enable controller support",
+                "settings.preferences.gamepadDescription",
+                "Navigate P-Stream using your Xbox or PlayStation controller.",
               )}
             </p>
+
+            <div className="flex flex-col gap-4 max-w-[25rem]">
+              {!enableGamepadControls || !gamepadSetupComplete ? (
+                <Button
+                  theme="purple"
+                  onClick={() => navigate("/gamepad-setup")}
+                  className="w-full py-4 text-lg"
+                >
+                  {t(
+                    "settings.preferences.setupGamepad",
+                    "Setup Controller Support",
+                  )}
+                </Button>
+              ) : (
+                <>
+                  <div
+                    onClick={() =>
+                      setEnableGamepadControls(!enableGamepadControls)
+                    }
+                    className="bg-dropdown-background hover:bg-dropdown-hoverBackground select-none cursor-pointer space-x-3 flex items-center py-3 px-4 rounded-lg border border-white/5"
+                  >
+                    <Toggle enabled={enableGamepadControls} />
+                    <p className="flex-1 text-white font-bold">
+                      {t(
+                        "settings.preferences.enableGamepadControls",
+                        "Enabled",
+                      )}
+                    </p>
+                  </div>
+
+                  <div className="grid grid-cols-2 gap-3">
+                    <Button
+                      theme="secondary"
+                      onClick={() => navigate("/gamepad-setup")}
+                      className="flex-1"
+                    >
+                      {t("settings.preferences.redoSetup", "Redo Setup")}
+                    </Button>
+                    <Button
+                      theme="secondary"
+                      onClick={() => showModal("gamepad-controls-edit")}
+                      className="flex-1"
+                    >
+                      {t("settings.preferences.keybinds", "Keybinds")}
+                    </Button>
+                  </div>
+
+                  <div>
+                    <p className="text-xs text-type-dimmed mb-2 uppercase font-bold tracking-wider">
+                      Input Mode
+                    </p>
+                    <Dropdown
+                      className="w-full"
+                      options={[
+                        { id: "both", name: "Both (Recommended)" },
+                        { id: "controller", name: "Controller Only" },
+                        { id: "kbm", name: "Keyboard & Mouse Only" },
+                      ]}
+                      selectedItem={
+                        [
+                          { id: "both", name: "Both (Recommended)" },
+                          { id: "controller", name: "Controller Only" },
+                          { id: "kbm", name: "Keyboard & Mouse Only" },
+                        ].find((i) => i.id === gamepadInputMode) || {
+                          id: "both",
+                          name: "Both (Recommended)",
+                        }
+                      }
+                      setSelectedItem={(opt) =>
+                        setGamepadInputMode(
+                          opt.id as "controller" | "kbm" | "both",
+                        )
+                      }
+                    />
+                  </div>
+
+                  <div
+                    onClick={() => setIgnoreHeader(!ignoreHeader)}
+                    className="bg-dropdown-background hover:bg-dropdown-hoverBackground select-none cursor-pointer space-x-3 flex items-center py-3 px-4 rounded-lg border border-white/5"
+                  >
+                    <Toggle enabled={ignoreHeader} />
+                    <div className="flex-1">
+                      <p className="text-white font-bold text-left">
+                        {t("settings.preferences.gamepadIgnoreHeaderTitle")}
+                      </p>
+                      <p className="text-xs text-type-dimmed text-left font-medium">
+                        {t(
+                          "settings.preferences.gamepadIgnoreHeaderDescription",
+                        )}
+                      </p>
+                    </div>
+                  </div>
+                </>
+              )}
+            </div>
           </div>
         </div>
 
