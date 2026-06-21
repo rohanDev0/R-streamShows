@@ -1,6 +1,5 @@
-import { fetchGridData } from "@p-stream/providers";
-import type { GridData } from "@p-stream/providers";
-import { useCallback, useEffect, useMemo, useState } from "react";
+
+import { JSXElementConstructor, ReactElement, ReactNode, ReactPortal, useCallback, useEffect, useMemo, useState } from "react";
 import { Trans, useTranslation } from "react-i18next";
 import { useCopyToClipboard } from "react-use";
 
@@ -58,28 +57,12 @@ function OriginalFileView({ id }: { id: string }) {
   const { t } = useTranslation();
   const meta = usePlayerStore((s) => s.meta);
   const selectedCaption = usePlayerStore((s) => s.caption?.selected);
-  const [data, setData] = useState<GridData | null>(null);
+  const [data, setData] = useState<any>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(false);
 
   const tmdbId = meta?.tmdbId;
 
-  useEffect(() => {
-    if (!tmdbId) return;
-    let cancelled = false;
-    setLoading(true);
-    setError(false);
-
-    fetchGridData(tmdbId).then((json) => {
-      if (!cancelled) setData(json);
-    }).catch(() => {
-      if (!cancelled) setError(true);
-    }).finally(() => {
-      if (!cancelled) setLoading(false);
-    });
-
-    return () => { cancelled = true; };
-  }, [tmdbId]);
 
   const openSubtitleDownload = useCallback(() => {
     const dataUrl = selectedCaption
@@ -89,7 +72,7 @@ function OriginalFileView({ id }: { id: string }) {
     window.open(dataUrl);
   }, [selectedCaption]);
 
-  const hasDownloads = data?.downloads && data.downloads.length > 0;
+  const hasDownloads = false;
 
   return (
     <>
@@ -112,7 +95,7 @@ function OriginalFileView({ id }: { id: string }) {
             {t("player.menus.downloads.original.noResults")}
           </Menu.Paragraph>
         )}
-        {hasDownloads && data?.downloads.map((dl, i) => (
+        {hasDownloads && data?.downloads.map((dl: { title: string | number | boolean | ReactElement<any, string | JSXElementConstructor<any>> | Iterable<ReactNode> | ReactPortal | Iterable<ReactNode> | null | undefined; format: string | number | boolean | ReactElement<any, string | JSXElementConstructor<any>> | Iterable<ReactNode> | ReactPortal | Iterable<ReactNode> | null | undefined; resolution: string | number | boolean | ReactElement<any, string | JSXElementConstructor<any>> | Iterable<ReactNode> | ReactPortal | Iterable<ReactNode> | null | undefined; size: string | number | boolean | ReactElement<any, string | JSXElementConstructor<any>> | Iterable<ReactNode> | ReactPortal | Iterable<ReactNode> | null | undefined; sources: { url: string | undefined; name: string | number | boolean | ReactElement<any, string | JSXElementConstructor<any>> | Iterable<ReactNode> | ReactPortal | Iterable<ReactNode> | null | undefined; }[]; }, i: any) => (
           <div
             key={`${dl.title}-${i}`}
             className="w-full rounded-lg bg-video-context-light/10 p-3 mb-2"
@@ -136,7 +119,7 @@ function OriginalFileView({ id }: { id: string }) {
               {dl.title}
             </p>
             <div className="flex gap-2 flex-wrap">
-              {dl.sources.map((src, j) => (
+              {dl.sources.map((src: { url: string | undefined; name: string | number | boolean | ReactElement<any, string | JSXElementConstructor<any>> | Iterable<ReactNode> | ReactPortal | Iterable<ReactNode> | null | undefined; }, j: any) => (
                 <a
                   key={`${src.url}-${j}`}
                   href={src.url}

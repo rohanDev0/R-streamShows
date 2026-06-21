@@ -28,9 +28,9 @@ import { SkipSegmentsView } from "./settings/SkipSegmentsView";
 import { TranscriptView } from "./settings/TranscriptView";
 import { TranslateSubtitleView } from "./settings/TranslateSubtitleView";
 import { WatchPartyView } from "./settings/WatchPartyView";
-import { VariantView } from "./settings/VariantView";
+//import { VariantView } from "./settings/VariantView";
 
-function SettingsOverlay({ id }: { id: string }) {
+/*function SettingsOverlay({ id }: { id: string }) {
   const [chosenSourceId, setChosenSourceId] = useState<string | null>(null);
   const [chosenLanguage, setChosenLanguage] = useState<string | null>(null);
   const [captionToTranslate, setCaptionToTranslate] =
@@ -74,7 +74,7 @@ function SettingsOverlay({ id }: { id: string }) {
             />
           </Menu.CardWithScrollable>
         </OverlayPage>
-        {/* This is used by the captions shortcut in bottomControls of player */}
+        {/* This is used by the captions shortcut in bottomControls of player }
         <OverlayPage id={id} path="/captionsOverlay" width={343} height={496}>
           <Menu.CardWithScrollable>
             <CaptionsView id={id} onChooseLanguage={setChosenLanguage} />
@@ -118,7 +118,7 @@ function SettingsOverlay({ id }: { id: string }) {
             <CaptionSettingsView id={id} />
           </Menu.Card>
         </OverlayPage>
-        {/* This is used by the captions shortcut in bottomControls of player */}
+        {/* This is used by the captions shortcut in bottomControls of player }
         <OverlayPage
           id={id}
           path="/captions/settingsOverlay"
@@ -191,43 +191,10 @@ function SettingsOverlay({ id }: { id: string }) {
           width={443}
           height={496}
         >
-          <Menu.CardWithScrollable>
-            {captionToTranslate && (
-              <TranslateSubtitleView id={id} caption={captionToTranslate} />
-            )}
-          </Menu.CardWithScrollable>
-        </OverlayPage>
-        <DownloadRoutes id={id} />
-        <OverlayPage id={id} path="/variant" width={343} height={496}>
-          <Menu.CardWithScrollable>
-            <VariantView id={id} />
-          </Menu.CardWithScrollable>
-        </OverlayPage>
-        <OverlayPage id={id} path="/watchparty" width={343} height={496}>
-          <Menu.CardWithScrollable>
-            <WatchPartyView id={id} />
-          </Menu.CardWithScrollable>
-        </OverlayPage>
-      </OverlayRouter>
-    </Overlay>
-  );
-}
+          id} />
+       </OverlayPage> < id={id} path="/variant" width={343} height={496}>
+        
+          
 
-export function SettingsRouter() {
-  return <SettingsOverlay id="settings" />;
-}
-
-export function Settings() {
-  const router = useOverlayRouter("settings");
-  const setHasOpenOverlay = usePlayerStore((s) => s.setHasOpenOverlay);
-
-  useEffect(() => {
-    setHasOpenOverlay(router.isRouterActive);
-  }, [setHasOpenOverlay, router.isRouterActive]);
-
-  return (
-    <OverlayAnchor id={router.id}>
-      <VideoPlayerButton onClick={() => router.open()} icon={Icons.GEAR} />
-    </OverlayAnchor>
-  );
-}
+  
+} </id> */

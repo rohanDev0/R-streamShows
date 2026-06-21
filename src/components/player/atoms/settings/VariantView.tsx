@@ -1,3 +1,4 @@
+/*
 import { useCallback, useState } from "react";
 
 import {
@@ -228,3 +229,5 @@ export function VariantView({ id }: { id: string }) {
     </>
   );
 }
+
+*/
